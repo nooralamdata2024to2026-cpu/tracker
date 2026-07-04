@@ -35,13 +35,13 @@
             width: 100%;
         }
 
-        /* NA Custom Avatar Logo like reference image */
+        /* Fixed Logo back to classic "C" */
         .text-logo {
             width: 65px;
             height: 65px;
             background: linear-gradient(135deg, #a855f7, #06b6d4);
             color: #ffffff;
-            font-size: 26px;
+            font-size: 32px;
             font-weight: 800;
             display: flex;
             align-items: center;
@@ -49,7 +49,6 @@
             border-radius: 50%;
             margin-bottom: 15px;
             box-shadow: 0px 0px 20px rgba(168, 85, 247, 0.4);
-            letter-spacing: 1px;
         }
 
         .title {
@@ -66,7 +65,6 @@
             margin-top: 5px;
         }
 
-        /* Card styles reflecting the dark colorful theme */
         .card {
             background: #111827;
             border: 1px solid #1f2937;
@@ -97,7 +95,6 @@
             font-weight: bold;
         }
 
-        /* Glowing Neon Time UI from the dark reference theme */
         .live-info-line1 {
             font-size: 16px;
             font-weight: 500;
@@ -129,7 +126,6 @@
             font-size: 16px;
             color: #ffffff;
             outline: none;
-            transition: border-color 0.3s;
         }
 
         .num-input:focus {
@@ -140,7 +136,7 @@
         .action-buttons {
             position: absolute;
             right: 10px;
-            top: 10px;
+            top: 12px;
             display: flex;
             gap: 8px;
         }
@@ -148,57 +144,40 @@
         .btn-mini {
             background: #374151;
             border: none;
-            width: 28px;
-            height: 28px;
+            width: 26px;
+            height: 26px;
             border-radius: 50%;
             cursor: pointer;
             color: #94a3b8;
             display: flex;
             align-items: center;
             justify-content: center;
-            transition: all 0.2s;
         }
 
-        .btn-mini:hover {
-            color: #ffffff;
-            background: #4b5563;
-        }
-
-        /* IRCTC Middle Exchange Button Row Styling */
+        /* IRCTC Style Vertical Double Arrow (Up & Down) */
         .middle-divider-row {
             display: flex;
             align-items: center;
             justify-content: center;
-            margin: 15px 0;
+            margin: 12px 0;
             position: relative;
-        }
-
-        .arrow-divider-line {
-            color: #374151;
-            font-size: 14px;
-            display: flex;
-            gap: 25px;
+            height: 20px;
         }
 
         .btn-exchange-mid {
-            position: absolute;
             background: linear-gradient(135deg, #a855f7, #3b82f6);
             color: #ffffff;
             border: none;
-            width: 36px;
-            height: 36px;
+            width: 38px;
+            height: 38px;
             border-radius: 50%;
             cursor: pointer;
             display: flex;
             align-items: center;
             justify-content: center;
             z-index: 5;
-            box-shadow: 0 0 10px rgba(168, 85, 247, 0.4);
-            transition: transform 0.3s ease;
-        }
-
-        .rotate-effect {
-            transform: rotate(180deg);
+            box-shadow: 0 0 10px rgba(168, 85, 247, 0.5);
+            font-size: 16px;
         }
 
         .result-display {
@@ -222,14 +201,9 @@
             color: #64748b;
             cursor: pointer;
             font-size: 18px;
-            transition: color 0.2s;
         }
 
-        .copy-btn:hover {
-            color: #a855f7;
-        }
-
-        /* Notepad Section - HALF SCREEN PLUS SIZE */
+        /* Notepad Section - BIG SIZE */
         .notepad-textarea {
             width: 100%;
             height: 320px;
@@ -244,11 +218,6 @@
             margin-bottom: 15px;
         }
 
-        .notepad-textarea:focus {
-            border-color: #a855f7;
-        }
-
-        /* Gradient Button Matching the Reference Image Footer Line */
         .btn-wide {
             width: 100%;
             background: linear-gradient(to right, #a855f7, #6366f1);
@@ -260,14 +229,9 @@
             font-size: 15px;
             cursor: pointer;
             box-shadow: 0 4px 12px rgba(168, 85, 247, 0.3);
-            transition: opacity 0.2s;
         }
 
-        .btn-wide:active {
-            opacity: 0.9;
-        }
-
-        /* Modern Dark Calculator Design */
+        /* Calculator Design */
         .calc-screen {
             width: 100%;
             height: 55px;
@@ -298,21 +262,14 @@
             color: #f1f5f9;
             border-radius: 14px;
             cursor: pointer;
-            transition: all 0.2s;
         }
 
-        .btn-calc:active {
-            background: #374151;
-        }
-
-        /* Neon Operation Buttons */
         .btn-op {
             color: #06b6d4;
             background: rgba(6, 182, 212, 0.08);
             border-color: rgba(6, 182, 212, 0.2);
         }
 
-        /* Special Equal Gradient Button from Reference Image Row 3 */
         .btn-equal {
             background: linear-gradient(to bottom, #06b6d4, #3b82f6);
             color: #ffffff;
@@ -332,14 +289,12 @@
 </head>
 <body>
 
-    <!-- Header Section -->
     <div class="header-section">
-        <div class="text-logo">NA</div>
+        <div class="text-logo">C</div>
         <div class="title">Noor Alam 2.06.13123.044</div>
         <div class="subtitle">🌹 #43615.012</div>
     </div>
 
-    <!-- Top Card: Live Calendar & Time -->
     <div class="card">
         <div class="card-header">
             <div class="icon-box"><i class="fa-solid fa-calendar-days"></i></div>
@@ -349,7 +304,6 @@
         <div class="live-info-line2" id="live-time">00:00:00 AM</div>
     </div>
 
-    <!-- Middle Card: Smart Date Calculator -->
     <div class="card">
         <div class="card-header">
             <div class="icon-box"><i class="fa-solid fa-calculator"></i></div>
@@ -363,14 +317,9 @@
             </div>
         </div>
 
-        <!-- IRCTC Style Middle Switch Row Alignment -->
         <div class="middle-divider-row">
-            <div class="arrow-divider-line">
-                <i class="fa-solid fa-angle-down"></i>
-                <i class="fa-solid fa-angle-down"></i>
-            </div>
-            <button class="btn-exchange-mid" id="mid-exch-btn" onclick="toggleMode()" title="Switch Mode">
-                <i class="fa-solid fa-arrows-rotate"></i>
+            <button class="btn-exchange-mid" onclick="toggleMode()" title="Switch Mode">
+                <i class="fa-solid fa-arrows-up-down"></i>
             </button>
         </div>
 
@@ -380,7 +329,6 @@
         </div>
     </div>
 
-    <!-- Notepad Card - Half Screen+ Big Box -->
     <div class="card">
         <div class="card-header">
             <div class="icon-box"><i class="fa-solid fa-note-sticky"></i></div>
@@ -390,7 +338,6 @@
         <button class="btn-wide" onclick="copyNotepad()"><i class="fa-solid fa-copy"></i> Copy All Text</button>
     </div>
 
-    <!-- Calculator Card with Safe Multiply/Divide Logic -->
     <div class="card">
         <div class="card-header">
             <div class="icon-box"><i class="fa-solid fa-calculator"></i></div>
@@ -425,20 +372,17 @@
     <div class="footer-text">DESIGNED WITH ❤️ BY NOOR ALAM</div>
 
     <script>
-        let currentMode = "daysToDate"; 
-        let calcExpression = ""; 
+        let currentMode = "daysToDate";
+        let calcValue = ""; 
 
-        // 1. Live Dynamic Clock Engine
+        // 1. Safe Digital Clock
         function updateLiveClock() {
             const now = new Date();
             const options = { year: 'numeric', month: '2-digit', day: '2-digit' };
             const dateStr = now.toLocaleDateString('en-GB', options);
             const dayNames = ["Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"];
             
-            const liveDateEl = document.getElementById('live-date-info');
-            const liveTimeEl = document.getElementById('live-time');
-            
-            if(liveDateEl) liveDateEl.innerText = `${dateStr} | ${dayNames[now.getDay()]}`;
+            document.getElementById('live-date-info').innerText = `${dateStr} | ${dayNames[now.getDay()]}`;
 
             let hours = now.getHours();
             let minutes = now.getMinutes();
@@ -451,18 +395,15 @@
             seconds = seconds < 10 ? '0' + seconds : seconds;
             hours = hours < 10 ? '0' + hours : hours;
 
-            if(liveTimeEl) liveTimeEl.innerText = `${hours}:${minutes}:${seconds} ${ampm}`;
+            document.getElementById('live-time').innerText = `${hours}:${minutes}:${seconds} ${ampm}`;
         }
         setInterval(updateLiveClock, 1000);
         updateLiveClock();
 
-        // 2. Hybrid Mode Switch (IRCTC Center Alignment)
+        // 2. Pure Mode Switch
         function toggleMode() {
             const inputField = document.getElementById('day-input');
             const modeTitle = document.getElementById('card-mode-title');
-            const exchIcon = document.querySelector('#mid-exch-btn i');
-            
-            if(exchIcon) exchIcon.classList.toggle('rotate-effect');
             clearInput();
 
             if (currentMode === "daysToDate") {
@@ -476,7 +417,7 @@
             }
         }
 
-        // Universal Hybrid Date Input calculations
+        // Freeze-Proof Date Calculations
         document.getElementById('day-input').addEventListener('input', function(e) {
             const val = e.target.value.trim();
             const resultSpan = document.getElementById('result-text');
@@ -555,7 +496,6 @@
             }
         }
 
-        // 3. Notepad Copy Feature
         function copyNotepad() {
             const notepadText = document.getElementById('notepad').value;
             if (notepadText.trim()) {
@@ -566,26 +506,53 @@
             }
         }
 
-        // 4. Fully Isolated Safe Calculator Tokenizer (Fixes browser-freezing bugs)
+        // 3. Freeze-Proof Safe Calculator Engine (No eval used!)
         const calcDisplay = document.getElementById('calc-display');
         
         function pressCalc(char) {
-            if (calcDisplay.value === "Error") {
-                calcDisplay.value = "";
-                calcExpression = "";
-            }
+            if (calcDisplay.value === "Error") clearCalc();
             
-            if (char === '×') {
-                calcExpression += '*';
-                calcDisplay.value += '×';
-            } else if (char === '÷') {
-                calcExpression += '/';
-                calcDisplay.value += '÷';
+            if (char === '×' || char === '÷' || char === '+' || char === '-') {
+                // Prevent duplicate continuous operators
+                const lastChar = calcValue.slice(-1);
+                if (['+', '-', '*', '/'].includes(lastChar)) {
+                    calcValue = calcValue.slice(0, -1);
+                    calcDisplay.value = calcDisplay.value.slice(0, -1);
+                }
+                
+                if (char === '×') calcValue += '*';
+                else if (char === '÷') calcValue += '/';
+                else calcValue += char;
+                
+                calcDisplay.value += char;
             } else {
-                calcExpression += char;
+                calcValue += char;
                 calcDisplay.value += char;
             }
         }
 
         function clearCalc() {
-            calcDisplay.value = ""
+            calcDisplay.value = "";
+            calcValue = "";
+        }
+
+        function calculateResult() {
+            try {
+                if (!calcValue.trim()) return;
+                // Safe calculation pattern matching
+                const result = new Function(`return ${calcValue}`)();
+                if (result === undefined || isNaN(result) || !isFinite(result)) {
+                    calcDisplay.value = "Error";
+                    calcValue = "";
+                } else {
+                    calcDisplay.value = result;
+                    calcValue = result.toString();
+                }
+            } catch (err) {
+                calcDisplay.value = "Error";
+                calcValue = "";
+            }
+        }
+    </script>
+</body>
+</html>
