@@ -35,7 +35,6 @@
             width: 100%;
         }
 
-        /* Pure CSS "C" Letter Logo in Center */
         .text-logo {
             width: 75px;
             height: 75px;
@@ -110,6 +109,8 @@
         .input-wrapper {
             position: relative;
             margin-bottom: 20px;
+            display: flex;
+            align-items: center;
         }
 
         .num-input {
@@ -117,8 +118,8 @@
             background: #f0f4f8;
             border: none;
             border-bottom: 2px solid #d1d9e6;
-            padding: 10px 5px;
-            font-size: 18px;
+            padding: 10px 100px 10px 5px; /* Added right padding for buttons */
+            font-size: 17px;
             color: #333;
             outline: none;
             transition: border-color 0.3s;
@@ -130,6 +131,7 @@
 
         .num-input::placeholder {
             color: #999;
+            font-size: 14px;
         }
 
         .action-buttons {
@@ -137,7 +139,7 @@
             right: 0;
             top: 5px;
             display: flex;
-            gap: 10px;
+            gap: 8px;
         }
 
         .btn-mini {
@@ -157,6 +159,17 @@
 
         .btn-mini:active {
             box-shadow: inset 2px 2px 5px #d1d9e6, inset -2px -2px 5px #ffffff;
+        }
+
+        /* IRCTC Style Exchange Button Effect */
+        .btn-exchange {
+            color: #2b5c43;
+            font-weight: bold;
+        }
+        
+        .rotate-effect {
+            transform: rotate(180deg);
+            transition: transform 0.3s ease;
         }
 
         .arrow-divider {
@@ -200,7 +213,6 @@
 
     <!-- Header Section -->
     <div class="header-section">
-        <!-- Pure Code Letter Logo "C" instead of Image -->
         <div class="text-logo">C</div>
         <div class="title">Noor Alam 2.06.13123.044</div>
         <div class="subtitle">🌹 #43615.012</div>
@@ -220,14 +232,16 @@
     <div class="card">
         <div class="card-header">
             <div class="icon-box"><i class="fa-solid fa-calculator"></i></div>
-            <span>Find Date (e.g., +5 or -4)</span>
+            <span id="card-mode-title">Find Date (e.g., +5 or -4)</span>
         </div>
-        
+
         <div class="input-wrapper">
+            <!-- Dynamic input that changes placeholder and type based on mode -->
             <input type="text" id="day-input" class="num-input" placeholder="Type number with + or - ...">
             <div class="action-buttons">
+                <!-- IRCTC Style Exchange Button -->
+                <button class="btn-mini btn-exchange" id="exch-btn" onclick="toggleMode()" title="Switch Mode"><i class="fa-solid fa-arrows-rotate"></i></button>
                 <button class="btn-mini" onclick="clearInput()"><i class="fa-solid fa-trash"></i></button>
-                <button class="btn-mini" onclick="clearInput()"><i class="fa-solid fa-rotate-left"></i></button>
             </div>
         </div>
 
@@ -244,6 +258,8 @@
     <div class="footer-text">DESIGNED BY NOOR ALAM</div>
 
     <script>
+        let currentMode = "daysToDate"; // Modes: "daysToDate" or "dateToDays"
+
         function updateLiveClock() {
             const now = new Date();
             const options = { year: 'numeric', month: '2-digit', day: '2-digit' };
@@ -257,7 +273,7 @@
             let minutes = now.getMinutes();
             let seconds = now.getSeconds();
             const ampm = hours >= 12 ? 'PM' : 'AM';
-            
+
             hours = hours % 12;
             hours = hours ? hours : 12; 
             minutes = minutes < 10 ? '0' + minutes : minutes;
@@ -270,6 +286,31 @@
         setInterval(updateLiveClock, 1000);
         updateLiveClock();
 
+        // Toggle Calculator Mode (IRCTC Style Exchange)
+        function toggleMode() {
+            const inputField = document.getElementById('day-input');
+            const modeTitle = document.getElementById('card-mode-title');
+            const exchIcon = document.querySelector('#exch-btn i');
+            
+            // Spin animation like IRCTC
+            exchIcon.classList.toggle('rotate-effect');
+            
+            clearInput();
+
+            if (currentMode === "daysToDate") {
+                currentMode = "dateToDays";
+                inputField.type = "date"; // Changes to calendar picker on click/tap
+                inputField.placeholder = ""; 
+                modeTitle.innerText = "Find Days from Today (Select Date)";
+            } else {
+                currentMode = "daysToDate";
+                inputField.type = "text";
+                inputField.placeholder = "Type number with + or - ...";
+                modeTitle.innerText = "Find Date (e.g., +5 or -4)";
+            }
+        }
+
+        // Live calculation logic
         document.getElementById('day-input').addEventListener('input', function(e) {
             const val = e.target.value.trim();
             const resultSpan = document.getElementById('result-text');
@@ -279,26 +320,53 @@
                 return;
             }
 
-            if (!val.startsWith('+') && !val.startsWith('-')) {
-                resultSpan.innerText = "Please use + or - prefix";
-                return;
+            if (currentMode === "daysToDate") {
+                // Mode 1: Number to Date (+5 / -4)
+                if (!val.startsWith('+') && !val.startsWith('-')) {
+                    resultSpan.innerText = "Use + or - prefix";
+                    return;
+                }
+
+                const daysOffset = parseInt(val);
+                if (isNaN(daysOffset)) {
+                    resultSpan.innerText = "Invalid number";
+                    return;
+                }
+
+                const targetDate = new Date();
+                targetDate.setDate(targetDate.getDate() + daysOffset);
+
+                const options = { year: 'numeric', month: '2-digit', day: '2-digit' };
+                const finalDateStr = targetDate.toLocaleDateString('en-GB', options);
+                const dayNames = ["Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"];
+                const finalDayStr = dayNames[targetDate.getDay()];
+
+                resultSpan.innerText = `${finalDateStr} | ${finalDayStr}`;
+
+            } else {
+                // Mode 2: Date to Days Difference
+                const inputDate = new Date(val);
+                if (isNaN(inputDate.getTime())) {
+                    resultSpan.innerText = "Invalid Date";
+                    return;
+                }
+
+                // Reset time to compare only dates
+                const today = new Date();
+                today.setHours(0,0,0,0);
+                inputDate.setHours(0,0,0,0);
+
+                const timeDiff = inputDate.getTime() - today.getTime();
+                const diffDays = Math.round(timeDiff / (1000 * 60 * 60 * 24));
+
+                if (diffDays === 0) {
+                    resultSpan.innerText = "Today (0 Days)";
+                } else if (diffDays > 0) {
+                    resultSpan.innerText = `${diffDays} Days Later (🎯 After)`;
+                } else {
+                    resultSpan.innerText = `${Math.abs(diffDays)} Days Ago (⏳ Before)`;
+                }
             }
-
-            const daysOffset = parseInt(val);
-            if (isNaN(daysOffset)) {
-                resultSpan.innerText = "Invalid number";
-                return;
-            }
-
-            const targetDate = new Date();
-            targetDate.setDate(targetDate.getDate() + daysOffset);
-
-            const options = { year: 'numeric', month: '2-digit', day: '2-digit' };
-            const finalDateStr = targetDate.toLocaleDateString('en-GB', options);
-            const dayNames = ["Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"];
-            const finalDayStr = dayNames[targetDate.getDay()];
-            
-            resultSpan.innerText = `${finalDateStr} | ${finalDayStr}`;
         });
 
         function clearInput() {
