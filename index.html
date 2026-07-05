@@ -3,555 +3,297 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Noor Alam Premium Dashboard</title>
+    <title>WhatsApp Ultimate Chat Decoder</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
+
     <style>
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Segoe UI', -apple-system, sans-serif; }
+        body { background-color: #d1d5db; min-height: 100vh; padding: 10px; display: flex; flex-direction: column; align-items: center; }
+        
+        .chat-frame { 
+            width: 100%; 
+            max-width: 600px; 
+            height: 88vh; 
+            background-color: #efeae2; 
+            border-radius: 20px; 
+            box-shadow: 0 10px 25px rgba(0,0,0,0.2); 
+            display: flex; 
+            flex-direction: column; 
+            overflow: hidden; 
+            border: 1px solid #bbb; 
         }
-
-        body {
-            background-color: #0b0f19;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: flex-start;
-            min-height: 100vh;
-            padding: 20px;
-            color: #ffffff;
+        
+        .chat-header { 
+            background: #075e54; 
+            color: white; 
+            padding: 14px 18px; 
+            font-size: 18px; 
+            font-weight: bold; 
+            display: flex; 
+            align-items: center; 
+            justify-content: space-between;
+            position: sticky; 
+            top: 0; 
+            z-index: 100; 
+            box-shadow: 0 2px 5px rgba(0,0,0,0.15); 
         }
+        .header-left { display: flex; align-items: center; gap: 12px; max-width: 80%; }
+        #chat-title { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+        
+        .btn-delete { color: #ff6b6b; cursor: pointer; padding: 5px; transition: transform 0.1s ease, opacity 0.1s; }
+        .btn-delete:active { transform: scale(0.8); opacity: 0.7; }
+        
+        .chat-body { 
+            flex: 1; 
+            overflow-y: auto; 
+            padding: 15px; 
+            display: flex; 
+            flex-direction: column; 
+            gap: 10px; 
+            scroll-behavior: smooth; 
+        }
+        
+        .msg { max-width: 85%; padding: 8px 14px 22px 14px; border-radius: 8px; font-size: 14.5px; position: relative; line-height: 1.4; word-wrap: break-word; box-shadow: 0 1px 2px rgba(0,0,0,0.12); display: block; color: #000000 !important; white-space: pre-wrap; }
+        .msg.incoming { background: #ffffff !important; align-self: flex-start; border-top-left-radius: 0; }
+        .msg.outgoing { background: #e7ffdb !important; align-self: flex-end; border-top-right-radius: 0; }
+        
+        .sender-name { font-size: 11px; font-weight: bold; color: #35a661 !important; margin-bottom: 3px; display: block; }
+        .msg.outgoing .sender-name { color: #4f772d !important; }
+        .msg-time { font-size: 9.5px; color: #666666 !important; position: absolute; bottom: 4px; right: 10px; white-space: nowrap; }
+        .system-msg { background: #e1f3fb !important; color: #4a4a4a !important; font-size: 12px; padding: 6px 14px; border-radius: 7px; align-self: center; text-align: center; margin: 5px 0; max-width: 92%; line-height: 1.3; box-shadow: 0 1px 1px rgba(0,0,0,0.05); }
 
-        .header-section {
-            display: flex;
+        .bottom-controls { width: 100%; max-width: 600px; padding: 12px 5px; text-align: center; }
+        .status-loading { color: #4b5563; font-size: 13.5px; font-weight: bold; margin-bottom: 8px; }
+        
+        .btn-group { display: flex; gap: 12px; justify-content: center; width: 100%; }
+        
+        .btn { 
+            border: none; 
+            padding: 14px 15px; 
+            font-size: 15px; 
+            font-weight: bold; 
+            border-radius: 14px; 
+            cursor: pointer; 
+            display: inline-flex; 
+            align-items: center; 
+            justify-content: center; 
+            gap: 8px; 
+            color: white; 
+            flex: 1; 
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1); 
+            transition: transform 0.1s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+        }
+        .btn:active { transform: scale(0.93); }
+        .btn-pdf { background: linear-gradient(135deg, #00b4db, #0083b0); }
+        .btn-zip { background: linear-gradient(135deg, #11998e, #38ef7d); }
+        
+        #file-input { display: none; }
+
+        .loading-overlay {
+            position: fixed;
+            top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(0, 0, 0, 0.76);
+            display: none; 
             flex-direction: column;
             align-items: center;
             justify-content: center;
-            text-align: center;
-            margin-bottom: 25px;
-            margin-top: 10px;
-            width: 100%;
-        }
-
-        /* Fixed Logo back to classic "C" */
-        .text-logo {
-            width: 65px;
-            height: 65px;
-            background: linear-gradient(135deg, #a855f7, #06b6d4);
-            color: #ffffff;
-            font-size: 32px;
-            font-weight: 800;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            border-radius: 50%;
-            margin-bottom: 15px;
-            box-shadow: 0px 0px 20px rgba(168, 85, 247, 0.4);
-        }
-
-        .title {
-            font-size: 24px;
-            background: linear-gradient(to right, #a855f7, #06b6d4, #3b82f6);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-            font-weight: 700;
-        }
-
-        .subtitle {
-            font-size: 14px;
-            color: #94a3b8;
-            margin-top: 5px;
-        }
-
-        .card {
-            background: #111827;
-            border: 1px solid #1f2937;
-            border-radius: 24px;
-            width: 100%;
-            max-width: 380px;
-            padding: 22px;
-            margin-bottom: 22px;
-            position: relative;
-            box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.3);
-        }
-
-        .card-header {
-            display: flex;
-            align-items: center;
-            gap: 12px;
-            font-weight: 600;
+            z-index: 9999;
+            color: white;
             font-size: 16px;
-            color: #f1f5f9;
-            margin-bottom: 20px;
-        }
-
-        .icon-box {
-            background: rgba(168, 85, 247, 0.15);
-            color: #c084fc;
-            padding: 8px 12px;
-            border-radius: 12px;
             font-weight: bold;
         }
-
-        .live-info-line1 {
-            font-size: 16px;
-            font-weight: 500;
-            color: #94a3b8;
-            margin-bottom: 6px;
-        }
-
-        .live-info-line2 {
-            font-size: 32px;
-            font-weight: 700;
-            color: #06b6d4;
-            text-shadow: 0 0 12px rgba(6, 182, 212, 0.4);
-            letter-spacing: 1px;
-        }
-
-        .input-wrapper {
-            position: relative;
-            margin-bottom: 10px;
-            display: flex;
-            align-items: center;
-        }
-
-        .num-input {
-            width: 100%;
-            background: #1f2937;
-            border: 1px solid #374151;
-            border-radius: 12px;
-            padding: 12px 45px 12px 12px;
-            font-size: 16px;
-            color: #ffffff;
-            outline: none;
-        }
-
-        .num-input:focus {
-            border-color: #06b6d4;
-            box-shadow: 0 0 0 2px rgba(6, 182, 212, 0.2);
-        }
-
-        .action-buttons {
-            position: absolute;
-            right: 10px;
-            top: 12px;
-            display: flex;
-            gap: 8px;
-        }
-
-        .btn-mini {
-            background: #374151;
-            border: none;
-            width: 26px;
-            height: 26px;
+        .spinner {
+            width: 50px;
+            height: 50px;
+            border: 5px solid rgba(255,255,255,0.2);
             border-radius: 50%;
-            cursor: pointer;
-            color: #94a3b8;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-        }
-
-        /* IRCTC Style Vertical Double Arrow (Up & Down) */
-        .middle-divider-row {
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            margin: 12px 0;
-            position: relative;
-            height: 20px;
-        }
-
-        .btn-exchange-mid {
-            background: linear-gradient(135deg, #a855f7, #3b82f6);
-            color: #ffffff;
-            border: none;
-            width: 38px;
-            height: 38px;
-            border-radius: 50%;
-            cursor: pointer;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            z-index: 5;
-            box-shadow: 0 0 10px rgba(168, 85, 247, 0.5);
-            font-size: 16px;
-        }
-
-        .result-display {
-            font-size: 18px;
-            font-weight: 600;
-            color: #f1f5f9;
-            min-height: 45px;
-            padding: 10px 12px;
-            background: rgba(255, 255, 255, 0.03);
-            border-radius: 12px;
-            border-left: 3px solid #a855f7;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-top: 10px;
-        }
-
-        .copy-btn {
-            background: transparent;
-            border: none;
-            color: #64748b;
-            cursor: pointer;
-            font-size: 18px;
-        }
-
-        /* Notepad Section - BIG SIZE */
-        .notepad-textarea {
-            width: 100%;
-            height: 320px;
-            background: #1f2937;
-            border: 1px solid #374151;
-            border-radius: 16px;
-            padding: 14px;
-            font-size: 15px;
-            color: #ffffff;
-            resize: none;
-            outline: none;
+            border-top-color: #34a853; 
+            animation: spin 0.8s linear infinite;
             margin-bottom: 15px;
         }
+        @keyframes spin { to { transform: rotate(360deg); } }
 
-        .btn-wide {
-            width: 100%;
-            background: linear-gradient(to right, #a855f7, #6366f1);
-            color: white;
-            border: none;
-            padding: 14px;
-            border-radius: 14px;
-            font-weight: 600;
-            font-size: 15px;
-            cursor: pointer;
-            box-shadow: 0 4px 12px rgba(168, 85, 247, 0.3);
-        }
-
-        /* Calculator Design */
-        .calc-screen {
-            width: 100%;
-            height: 55px;
-            background: #1f2937;
-            border-radius: 14px;
-            border: 1px solid #374151;
-            text-align: right;
-            padding: 12px;
-            font-size: 24px;
-            color: #ffffff;
-            margin-bottom: 15px;
-            font-weight: 600;
-            outline: none;
-        }
-
-        .calc-grid {
-            display: grid;
-            grid-template-columns: repeat(4, 1fr);
-            gap: 12px;
-        }
-
-        .btn-calc {
-            background: #1f2937;
-            border: 1px solid #374151;
-            padding: 16px 0;
-            font-size: 18px;
-            font-weight: 600;
-            color: #f1f5f9;
-            border-radius: 14px;
-            cursor: pointer;
-        }
-
-        .btn-op {
-            color: #06b6d4;
-            background: rgba(6, 182, 212, 0.08);
-            border-color: rgba(6, 182, 212, 0.2);
-        }
-
-        .btn-equal {
-            background: linear-gradient(to bottom, #06b6d4, #3b82f6);
-            color: #ffffff;
-            border: none;
-        }
-
-        .footer-text {
-            font-size: 11px;
-            font-weight: 700;
-            color: #64748b;
-            letter-spacing: 1.5px;
-            margin-top: 10px;
-            margin-bottom: 25px;
-            text-transform: uppercase;
+        @media print {
+            body, html { background: #efeae2 !important; padding: 0 !important; height: auto !important; min-height: auto !important; }
+            .bottom-controls, .loading-overlay { display: none !important; } 
+            .chat-frame { 
+                width: 100% !important; 
+                max-width: 100% !important; 
+                height: auto !important; 
+                overflow: visible !important; 
+                border: none !important; 
+                box-shadow: none !important; 
+                border-radius: 0 !important;
+                background-color: #efeae2 !important;
+                -webkit-print-color-adjust: exact !important;
+                print-color-adjust: exact !important;
+            }
+            .chat-body { overflow: visible !important; height: auto !important; max-height: none !important; display: flex !important; flex-direction: column !important; padding: 15px !important; }
+            .chat-header { position: relative !important; background: #075e54 !important; color: white !important; -webkit-print-color-adjust: exact !important; print-color-adjust: exact !important; }
+            .btn-delete { display: none !important; }
+            .msg { page-break-inside: avoid !important; break-inside: avoid !important; display: block !important; -webkit-print-color-adjust: exact !important; print-color-adjust: exact !important; }
+            .msg.incoming { background: #ffffff !important; color: #000000 !important; }
+            .msg.outgoing { background: #e7ffdb !important; color: #000000 !important; }
+            .system-msg { background: #e1f3fb !important; color: #4a4a4a !important; -webkit-print-color-adjust: exact !important; print-color-adjust: exact !important; }
         }
     </style>
 </head>
 <body>
 
-    <div class="header-section">
-        <div class="text-logo">C</div>
-        <div class="title">Noor Alam 2.06.13123.044</div>
-        <div class="subtitle">🌹 #43615.012</div>
+    <div class="loading-overlay" id="loading-screen">
+        <div class="spinner"></div>
+        <div id="loading-text">Please wait, preparing PDF...</div>
     </div>
 
-    <div class="card">
-        <div class="card-header">
-            <div class="icon-box"><i class="fa-solid fa-calendar-days"></i></div>
-            <span>Today's Calendar</span>
-        </div>
-        <div class="live-info-line1" id="live-date-info">Loading...</div>
-        <div class="live-info-line2" id="live-time">00:00:00 AM</div>
-    </div>
-
-    <div class="card">
-        <div class="card-header">
-            <div class="icon-box"><i class="fa-solid fa-calculator"></i></div>
-            <span id="card-mode-title">Find Date (e.g., +5 or -4)</span>
-        </div>
-
-        <div class="input-wrapper">
-            <input type="text" id="day-input" class="num-input" placeholder="Type number with + or - ...">
-            <div class="action-buttons">
-                <button class="btn-mini" onclick="clearInput()"><i class="fa-solid fa-trash"></i></button>
+    <div class="chat-frame" id="chat-frame-box">
+        <div class="chat-header">
+            <div class="header-left">
+                <i class="fa-solid fa-user-circle fa-xl"></i> 
+                <span id="chat-title">WhatsApp Chat</span>
+            </div>
+            <div class="btn-delete" onclick="resetChatData()" title="Clear Chat Data">
+                <i class="fa-solid fa-trash-can fa-lg"></i>
             </div>
         </div>
-
-        <div class="middle-divider-row">
-            <button class="btn-exchange-mid" onclick="toggleMode()" title="Switch Mode">
-                <i class="fa-solid fa-arrows-up-down"></i>
-            </button>
-        </div>
-
-        <div class="result-display">
-            <span id="result-text">--</span>
-            <button class="copy-btn" onclick="copyResult()"><i class="fa-regular fa-copy"></i></button>
+        <div class="chat-body" id="chat-container">
+            <div class="system-msg" id="empty-state">Please select a .zip or .txt file using the 'Add Chat File' button below to load conversation.</div>
         </div>
     </div>
 
-    <div class="card">
-        <div class="card-header">
-            <div class="icon-box"><i class="fa-solid fa-note-sticky"></i></div>
-            <span>Hisab-Kitab Notepad</span>
-        </div>
-        <textarea id="notepad" class="notepad-textarea" placeholder="Write your calculations, notes, or days log here..."></textarea>
-        <button class="btn-wide" onclick="copyNotepad()"><i class="fa-solid fa-copy"></i> Copy All Text</button>
-    </div>
-
-    <div class="card">
-        <div class="card-header">
-            <div class="icon-box"><i class="fa-solid fa-calculator"></i></div>
-            <span>Basic Calculator</span>
-        </div>
-        <input type="text" id="calc-display" class="calc-screen" readonly placeholder="0">
-        <div class="calc-grid">
-            <button class="btn-calc btn-op" style="color: #ef4444;" onclick="clearCalc()">C</button>
-            <button class="btn-calc btn-op" onclick="pressCalc('÷')">÷</button>
-            <button class="btn-calc btn-op" onclick="pressCalc('×')">×</button>
-            <button class="btn-calc btn-op" onclick="pressCalc('-')">-</button>
-            
-            <button class="btn-calc" onclick="pressCalc('7')">7</button>
-            <button class="btn-calc" onclick="pressCalc('8')">8</button>
-            <button class="btn-calc" onclick="pressCalc('9')">9</button>
-            <button class="btn-calc btn-op" onclick="pressCalc('+')">+</button>
-            
-            <button class="btn-calc" onclick="pressCalc('4')">4</button>
-            <button class="btn-calc" onclick="pressCalc('5')">5</button>
-            <button class="btn-calc" onclick="pressCalc('6')">6</button>
-            <button class="btn-calc btn-equal" style="grid-row: span 2; height: 100%;" onclick="calculateResult()">=</button>
-            
-            <button class="btn-calc" onclick="pressCalc('1')">1</button>
-            <button class="btn-calc" onclick="pressCalc('2')">2</button>
-            <button class="btn-calc" onclick="pressCalc('3')">3</button>
-            
-            <button class="btn-calc" style="grid-column: span 2;" onclick="pressCalc('0')">0</button>
-            <button class="btn-calc" onclick="pressCalc('.')">.</button>
+    <div class="bottom-controls">
+        <div id="status" class="status-loading">No file selected</div>
+        <div class="btn-group">
+            <button class="btn btn-pdf" onclick="downloadPrintPDF()"><i class="fa-solid fa-file-pdf"></i> Save in PDF</button>
+            <button class="btn btn-zip" onclick="document.getElementById('file-input').click()"><i class="fa-solid fa-file-zipper"></i> Add Chat File</button>
+            <input type="file" id="file-input" accept=".zip,text/plain,application/zip" onchange="handleUploadedFile(this)">
         </div>
     </div>
-
-    <div class="footer-text">DESIGNED WITH ❤️ BY NOOR ALAM</div>
 
     <script>
-        let currentMode = "daysToDate";
-        let calcValue = ""; 
+        let hasData = false;
 
-        // 1. Safe Digital Clock
-        function updateLiveClock() {
-            const now = new Date();
-            const options = { year: 'numeric', month: '2-digit', day: '2-digit' };
-            const dateStr = now.toLocaleDateString('en-GB', options);
-            const dayNames = ["Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"];
+        function handleUploadedFile(input) {
+            const file = input.files[0];
+            if (!file) return;
+
+            const statusDiv = document.getElementById('status');
+            statusDiv.innerText = "Scanning file...";
+            statusDiv.style.color = "#075e54";
+
+            const reader = new FileReader();
+
+            if (file.name.toLowerCase().endsWith('.txt')) {
+                reader.onload = function(e) {
+                    hasData = true;
+                    statusDiv.innerText = "Chat loaded successfully! 👍";
+                    parseAndDisplayChat(e.target.result);
+                };
+                reader.readAsText(file);
+            } else {
+                reader.onload = function(e) {
+                    const arrayBuffer = e.target.result;
+                    JSZip.loadAsync(arrayBuffer).then(function(zip) {
+                        let chatFileKey = Object.keys(zip.files).find(name => name.toLowerCase().endsWith('.txt'));
+                        if (!chatFileKey) throw new Error("No .txt file found inside zip container!");
+                        return zip.file(chatFileKey).async("string");
+                    })
+                    .then(function(rawText) {
+                        hasData = true;
+                        statusDiv.innerText = "Zip chat loaded successfully! 👍";
+                        parseAndDisplayChat(rawText);
+                    })
+                    .catch(function(err) {
+                        statusDiv.innerText = "Error: " + err.message;
+                        statusDiv.style.color = "red";
+                    });
+                };
+                reader.readAsArrayBuffer(file);
+            }
+        }
+
+        function parseAndDisplayChat(rawText) {
+            const container = document.getElementById('chat-container');
+            container.innerHTML = ""; 
             
-            document.getElementById('live-date-info').innerText = `${dateStr} | ${dayNames[now.getDay()]}`;
+            // Universal Chat Splitter (Handles multiple timestamp structures seamlessly)
+            const lines = rawText.split(/\r?\n/);
+            let chatPartnerName = "WhatsApp Chat"; 
 
-            let hours = now.getHours();
-            let minutes = now.getMinutes();
-            let seconds = now.getSeconds();
-            const ampm = hours >= 12 ? 'PM' : 'AM';
-
-            hours = hours % 12;
-            hours = hours ? hours : 12; 
-            minutes = minutes < 10 ? '0' + minutes : minutes;
-            seconds = seconds < 10 ? '0' + seconds : seconds;
-            hours = hours < 10 ? '0' + hours : hours;
-
-            document.getElementById('live-time').innerText = `${hours}:${minutes}:${seconds} ${ampm}`;
-        }
-        setInterval(updateLiveClock, 1000);
-        updateLiveClock();
-
-        // 2. Pure Mode Switch
-        function toggleMode() {
-            const inputField = document.getElementById('day-input');
-            const modeTitle = document.getElementById('card-mode-title');
-            clearInput();
-
-            if (currentMode === "daysToDate") {
-                currentMode = "dateToDays";
-                inputField.placeholder = "Type date as DD-MM-YYYY ...";
-                modeTitle.innerText = "Find Days from Today (Type Date)";
-            } else {
-                currentMode = "daysToDate";
-                inputField.placeholder = "Type number with + or - ...";
-                modeTitle.innerText = "Find Date (e.g., +5 or -4)";
-            }
-        }
-
-        // Freeze-Proof Date Calculations
-        document.getElementById('day-input').addEventListener('input', function(e) {
-            const val = e.target.value.trim();
-            const resultSpan = document.getElementById('result-text');
-
-            if (!val) {
-                resultSpan.innerText = "--";
-                return;
-            }
-
-            if (currentMode === "daysToDate") {
-                if (!val.startsWith('+') && !val.startsWith('-')) {
-                    resultSpan.innerText = "Use + or - prefix";
-                    return;
-                }
-                const daysOffset = parseInt(val);
-                if (isNaN(daysOffset)) {
-                    resultSpan.innerText = "Invalid number";
-                    return;
-                }
-                const targetDate = new Date();
-                targetDate.setDate(targetDate.getDate() + daysOffset);
-
-                const options = { year: 'numeric', month: '2-digit', day: '2-digit' };
-                const finalDateStr = targetDate.toLocaleDateString('en-GB', options);
-                const dayNames = ["Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"];
-                resultSpan.innerText = `${finalDateStr} | ${dayNames[targetDate.getDay()]}`;
-
-            } else {
-                let parsedDate = null;
-                const dateParts = val.split(/[-/.]/);
+            lines.forEach(line => {
+                if (!line.trim()) return;
                 
-                if (dateParts.length === 3) {
-                    const day = parseInt(dateParts[0]);
-                    const month = parseInt(dateParts[1]) - 1;
-                    let year = parseInt(dateParts[2]);
-                    if (year < 100) year += 2000; 
+                // Super Regex matching both [3/7/26, 5:30 PM] and 3/7/26, 5:30 PM formats
+                const match = line.match(/^\[?(\d{1,4}\/\d{1,2}\/\d{1,4}),?\s+(\d{1,2}:\d{2}(?::\d{2})?\s*[A-Za-z]*)\]?\s*-\s*([^:]+):\s*(.*)$/) ||
+                              line.match(/^\[?(\d{1,4}\/\d{1,2}\/\d{1,4}),?\s+(\d{1,2}:\d{2}(?::\d{2})?\s*[A-Za-z]*)\]?\s+([^:]+):\s*(.*)$/);
+
+                if (match) {
+                    let date = match[1];
+                    let time = match[2];
+                    let sender = match[3].trim();
+                    let message = match[4].trim();
                     
-                    const testDate = new Date(year, month, day);
-                    if (testDate.getDate() === day && testDate.getMonth() === month && testDate.getFullYear() === year) {
-                        parsedDate = testDate;
+                    const senderLower = sender.toLowerCase();
+                    const isOutgoing = senderLower.includes("noor") || senderLower.includes("alam");
+
+                    if (!isOutgoing && chatPartnerName === "WhatsApp Chat") {
+                        chatPartnerName = sender; 
+                    }
+                    
+                    const msgDiv = document.createElement('div');
+                    msgDiv.className = `msg ${isOutgoing ? 'outgoing' : 'incoming'}`;
+                    msgDiv.innerHTML = `<span class="sender-name">${sender}</span>${message}<span class="msg-time">${time}</span>`;
+                    container.appendChild(msgDiv);
+                } else {
+                    // System messages check
+                    if (line.includes("encrypted") || line.includes("changed number") || line.includes("deleted") || line.includes("omitted")) {
+                        const sysDiv = document.createElement('div'); 
+                        sysDiv.className = 'system-msg'; 
+                        sysDiv.innerText = line;
+                        container.appendChild(sysDiv);
+                    } else {
+                        // Multi-line message continuation support
+                        const lastMsg = container.lastChild;
+                        if (lastMsg && lastMsg.classList.contains('msg')) {
+                            const timeSpan = lastMsg.querySelector('.msg-time');
+                            // Append line break text safely before time stamp element
+                            const textNode = document.createTextNode("\n" + line);
+                            lastMsg.insertBefore(textNode, timeSpan);
+                        }
                     }
                 }
-
-                if (!parsedDate) {
-                    resultSpan.innerText = "Format: DD-MM-YYYY";
-                    return;
-                }
-
-                const today = new Date();
-                today.setHours(0,0,0,0);
-                parsedDate.setHours(0,0,0,0);
-
-                const timeDiff = parsedDate.getTime() - today.getTime();
-                const diffDays = Math.round(timeDiff / (1000 * 60 * 60 * 24));
-
-                if (diffDays === 0) {
-                    resultSpan.innerText = "Today (0 Days)";
-                } else if (diffDays > 0) {
-                    resultSpan.innerText = `${diffDays} Days Later (🎯 After)`;
-                } else {
-                    resultSpan.innerText = `${Math.abs(diffDays)} Days Ago (⏳ Before)`;
-                }
-            }
-        });
-
-        function clearInput() {
-            document.getElementById('day-input').value = "";
-            document.getElementById('result-text').innerText = "--";
-        }
-
-        function copyResult() {
-            const textToCopy = document.getElementById('result-text').innerText;
-            if (textToCopy && textToCopy !== "--" && !textToCopy.includes("Format") && !textToCopy.includes("Use")) {
-                navigator.clipboard.writeText(textToCopy);
-                alert("Result copied! 👍");
-            }
-        }
-
-        function copyNotepad() {
-            const notepadText = document.getElementById('notepad').value;
-            if (notepadText.trim()) {
-                navigator.clipboard.writeText(notepadText);
-                alert("All note text copied successfully! 📝");
-            } else {
-                alert("Notepad is empty!");
-            }
-        }
-
-        // 3. Freeze-Proof Safe Calculator Engine (No eval used!)
-        const calcDisplay = document.getElementById('calc-display');
-        
-        function pressCalc(char) {
-            if (calcDisplay.value === "Error") clearCalc();
+            });
             
-            if (char === '×' || char === '÷' || char === '+' || char === '-') {
-                // Prevent duplicate continuous operators
-                const lastChar = calcValue.slice(-1);
-                if (['+', '-', '*', '/'].includes(lastChar)) {
-                    calcValue = calcValue.slice(0, -1);
-                    calcDisplay.value = calcDisplay.value.slice(0, -1);
-                }
-                
-                if (char === '×') calcValue += '*';
-                else if (char === '÷') calcValue += '/';
-                else calcValue += char;
-                
-                calcDisplay.value += char;
-            } else {
-                calcValue += char;
-                calcDisplay.value += char;
-            }
+            document.getElementById('chat-title').innerText = chatPartnerName;
+            setTimeout(() => { container.scrollTop = container.scrollHeight; }, 200);
         }
 
-        function clearCalc() {
-            calcDisplay.value = "";
-            calcValue = "";
+        function resetChatData() {
+            document.getElementById('chat-container').innerHTML = `<div class="system-msg">Please select a .zip or .txt file using the 'Add Chat File' button below to load conversation.</div>`;
+            document.getElementById('chat-title').innerText = "WhatsApp Chat";
+            document.getElementById('status').innerText = "Data cleared. Ready for new file selection.";
+            document.getElementById('status').style.color = "#4b5563";
+            document.getElementById('file-input').value = ""; 
+            hasData = false;
         }
 
-        function calculateResult() {
-            try {
-                if (!calcValue.trim()) return;
-                // Safe calculation pattern matching
-                const result = new Function(`return ${calcValue}`)();
-                if (result === undefined || isNaN(result) || !isFinite(result)) {
-                    calcDisplay.value = "Error";
-                    calcValue = "";
-                } else {
-                    calcDisplay.value = result;
-                    calcValue = result.toString();
-                }
-            } catch (err) {
-                calcDisplay.value = "Error";
-                calcValue = "";
+        function downloadPrintPDF() {
+            const statusDiv = document.getElementById('status');
+            const loader = document.getElementById('loading-screen');
+            
+            if(!hasData) {
+                statusDiv.innerText = "Please upload a chat file first!";
+                statusDiv.style.color = "red";
+                return;
             }
+            
+            loader.style.display = "flex";
+            setTimeout(() => {
+                window.print();
+                loader.style.display = "none";
+                statusDiv.innerText = "PDF converter dialog opened. 👍";
+                statusDiv.style.color = "#11998e";
+            }, 1000);
         }
     </script>
 </body>
