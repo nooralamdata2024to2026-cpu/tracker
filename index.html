@@ -61,7 +61,15 @@
         .sender-name { font-size: 11px; font-weight: bold; color: #35a661 !important; margin-bottom: 3px; display: block; }
         .msg.outgoing .sender-name { color: #4f772d !important; }
         .msg-time { font-size: 9.5px; color: #666666 !important; position: absolute; bottom: 4px; right: 10px; white-space: nowrap; }
+        
+        /* WHATSAPP SPECIFIC STYLES BY NOORAIN */
         .system-msg { background: #e1f3fb !important; color: #4a4a4a !important; font-size: 12px; padding: 6px 14px; border-radius: 7px; align-self: center; text-align: center; margin: 5px 0; max-width: 92%; line-height: 1.3; box-shadow: 0 1px 1px rgba(0,0,0,0.05); }
+        
+        .call-msg-box { background: #fff3cd !important; border: 1px dashed #ffeeba; color: #856404 !important; font-size: 13px; padding: 8px 15px; border-radius: 10px; align-self: center; text-align: center; margin: 4px 0; max-width: 85%; font-weight: 500; display: inline-flex; align-items: center; gap: 8px; box-shadow: 0 1px 3px rgba(0,0,0,0.05); }
+        
+        .deleted-text { color: #868e96 !important; font-style: italic; display: inline-flex; align-items: center; gap: 5px; }
+        
+        .image-placeholder-box { display: inline-flex; align-items: center; gap: 8px; background: rgba(0, 0, 0, 0.06); border: 1px solid rgba(0,0,0,0.1); padding: 6px 12px; border-radius: 6px; font-weight: bold; font-size: 13.5px; margin-top: 2px; color: #495057; }
 
         .bottom-controls { width: 100%; max-width: 600px; padding: 12px 5px; text-align: center; }
         .status-loading { color: #4b5563; font-size: 13.5px; font-weight: bold; margin-bottom: 8px; }
@@ -117,25 +125,14 @@
         @media print {
             body, html { background: #efeae2 !important; padding: 0 !important; height: auto !important; min-height: auto !important; }
             .bottom-controls, .loading-overlay { display: none !important; } 
-            .chat-frame { 
-                width: 100% !important; 
-                max-width: 100% !important; 
-                height: auto !important; 
-                overflow: visible !important; 
-                border: none !important; 
-                box-shadow: none !important; 
-                border-radius: 0 !important;
-                background-color: #efeae2 !important;
-                -webkit-print-color-adjust: exact !important;
-                print-color-adjust: exact !important;
-            }
+            .chat-frame { width: 100% !important; max-width: 100% !important; height: auto !important; overflow: visible !important; border: none !important; box-shadow: none !important; border-radius: 0 !important; background-color: #efeae2 !important; -webkit-print-color-adjust: exact !important; print-color-adjust: exact !important; }
             .chat-body { overflow: visible !important; height: auto !important; max-height: none !important; display: flex !important; flex-direction: column !important; padding: 15px !important; }
             .chat-header { position: relative !important; background: #075e54 !important; color: white !important; -webkit-print-color-adjust: exact !important; print-color-adjust: exact !important; }
             .btn-delete { display: none !important; }
             .msg { page-break-inside: avoid !important; break-inside: avoid !important; display: block !important; -webkit-print-color-adjust: exact !important; print-color-adjust: exact !important; }
             .msg.incoming { background: #ffffff !important; color: #000000 !important; }
             .msg.outgoing { background: #e7ffdb !important; color: #000000 !important; }
-            .system-msg { background: #e1f3fb !important; color: #4a4a4a !important; -webkit-print-color-adjust: exact !important; print-color-adjust: exact !important; }
+            .system-msg, .call-msg-box { -webkit-print-color-adjust: exact !important; print-color-adjust: exact !important; }
         }
     </style>
 </head>
@@ -215,54 +212,103 @@
         function parseAndDisplayChat(rawText) {
             const container = document.getElementById('chat-container');
             container.innerHTML = ""; 
-            
-            // Universal Chat Splitter (Handles multiple timestamp structures seamlessly)
-            const lines = rawText.split(/\r?\n/);
             let chatPartnerName = "WhatsApp Chat"; 
 
-            lines.forEach(line => {
-                if (!line.trim()) return;
+            const regexMarker = /(?:^|\s|\[)(\d{1,4}\/\d{1,2}\/\d{1,4}),?\s+(\d{1,2}:\d{2}(?::\d{2})?\s*[A-Za-z]*)(?:\]?[\s\-:]+)/g;
+            
+            let matches = [];
+            let match;
+            while ((match = regexMarker.exec(rawText)) !== null) {
+                matches.push({
+                    index: match.index,
+                    date: match[1],
+                    time: match[2],
+                    fullLength: match[0].length
+                });
+            }
+
+            if (matches.length === 0) {
+                container.innerHTML = `<div class="system-msg">Error: Unsupported date/time format detected.</div>`;
+                return;
+            }
+
+            for (let i = 0; i < matches.length; i++) {
+                let current = matches[i];
+                let nextIndex = (i + 1 < matches.length) ? matches[i+1].index : rawText.length;
                 
-                // Super Regex matching both [3/7/26, 5:30 PM] and 3/7/26, 5:30 PM formats
-                const match = line.match(/^\[?(\d{1,4}\/\d{1,2}\/\d{1,4}),?\s+(\d{1,2}:\d{2}(?::\d{2})?\s*[A-Za-z]*)\]?\s*-\s*([^:]+):\s*(.*)$/) ||
-                              line.match(/^\[?(\d{1,4}\/\d{1,2}\/\d{1,4}),?\s+(\d{1,2}:\d{2}(?::\d{2})?\s*[A-Za-z]*)\]?\s+([^:]+):\s*(.*)$/);
+                let contentBlock = rawText.substring(current.index + current.fullLength, nextIndex).trim();
+                if (!contentBlock) continue;
 
-                if (match) {
-                    let date = match[1];
-                    let time = match[2];
-                    let sender = match[3].trim();
-                    let message = match[4].trim();
-                    
-                    const senderLower = sender.toLowerCase();
-                    const isOutgoing = senderLower.includes("noor") || senderLower.includes("alam");
+                let sender = "System/Info";
+                let message = contentBlock;
 
-                    if (!isOutgoing && chatPartnerName === "WhatsApp Chat") {
-                        chatPartnerName = sender; 
+                if (contentBlock.includes(':')) {
+                    let idx = contentBlock.indexOf(':');
+                    let potentialSender = contentBlock.substring(0, idx).trim();
+                    if (potentialSender.length < 40) {
+                        sender = potentialSender;
+                        message = contentBlock.substring(idx + 1).trim();
                     }
-                    
-                    const msgDiv = document.createElement('div');
-                    msgDiv.className = `msg ${isOutgoing ? 'outgoing' : 'incoming'}`;
-                    msgDiv.innerHTML = `<span class="sender-name">${sender}</span>${message}<span class="msg-time">${time}</span>`;
-                    container.appendChild(msgDiv);
-                } else {
-                    // System messages check
-                    if (line.includes("encrypted") || line.includes("changed number") || line.includes("deleted") || line.includes("omitted")) {
-                        const sysDiv = document.createElement('div'); 
-                        sysDiv.className = 'system-msg'; 
-                        sysDiv.innerText = line;
-                        container.appendChild(sysDiv);
-                    } else {
-                        // Multi-line message continuation support
-                        const lastMsg = container.lastChild;
-                        if (lastMsg && lastMsg.classList.contains('msg')) {
-                            const timeSpan = lastMsg.querySelector('.msg-time');
-                            // Append line break text safely before time stamp element
-                            const textNode = document.createTextNode("\n" + line);
-                            lastMsg.insertBefore(textNode, timeSpan);
-                        }
+                } else if (contentBlock.includes('-')) {
+                    let idx = contentBlock.indexOf('-');
+                    let potentialSender = contentBlock.substring(0, idx).trim();
+                    if (potentialSender.length < 40) {
+                        sender = potentialSender;
+                        message = contentBlock.substring(idx + 1).trim();
                     }
                 }
-            });
+
+                const senderLower = sender.toLowerCase();
+                const messageLower = message.toLowerCase();
+                const isOutgoing = senderLower.includes("noor") || senderLower.includes("alam") || senderLower.includes("rehan");
+
+                // 1. SMART CALL BOX DETECTOR
+                const isCall = messageLower.includes("missed voice call") || 
+                               messageLower.includes("missed video call") || 
+                               messageLower.includes("voice call") || 
+                               messageLower.includes("video call") ||
+                               messageLower.includes("call started");
+
+                // 2. SMART SYSTEM FILTER 
+                const isSystemMessage = (message.includes("encrypted") || message.includes("omitted") || message.includes("changed number") || sender === "System/Info") && !isCall;
+                
+                if (!isOutgoing && !isSystemMessage && chatPartnerName === "WhatsApp Chat") {
+                    chatPartnerName = sender; 
+                }
+
+                // RENDERING DECISIONS
+                if (isCall) {
+                    // Render custom elegant call notification block
+                    const callDiv = document.createElement('div');
+                    callDiv.className = 'call-msg-box';
+                    let icon = messageLower.includes("video") ? "fa-video" : "fa-phone";
+                    callDiv.innerHTML = `<i class="fa-solid ${icon}"></i> <span>${sender}: ${message} (${current.time})</span>`;
+                    container.appendChild(callDiv);
+                } 
+                else if (isSystemMessage) {
+                    const sysDiv = document.createElement('div');
+                    sysDiv.className = 'system-msg';
+                    sysDiv.innerText = message;
+                    container.appendChild(sysDiv);
+                } 
+                else {
+                    const msgDiv = document.createElement('div');
+                    msgDiv.className = `msg ${isOutgoing ? 'outgoing' : 'incoming'}`;
+                    
+                    // 3. WHATSAPP STYLE DELETED MESSAGE MODIFIER
+                    if (messageLower.includes("this message was deleted") || messageLower.includes("you deleted this message")) {
+                        message = `<span class="deleted-text"><i class="fa-solid fa-ban"></i> This message was deleted</span>`;
+                    }
+                    // 4. WHATSAPP STYLE IMAGE DETECTOR & BOX CREATOR
+                    else if (messageLower.includes(".jpg (file attached)") || messageLower.includes(".png (file attached)") || messageLower.includes("file attached")) {
+                        let fileNameClean = message.split('(')[0].trim();
+                        message = `<div class="image-placeholder-box"><i class="fa-solid fa-camera"></i> Image (${fileNameClean})</div>`;
+                    }
+
+                    msgDiv.innerHTML = `<span class="sender-name">${sender}</span>${message}<span class="msg-time">${current.time}</span>`;
+                    container.appendChild(msgDiv);
+                }
+            }
             
             document.getElementById('chat-title').innerText = chatPartnerName;
             setTimeout(() => { container.scrollTop = container.scrollHeight; }, 200);
