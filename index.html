@@ -4,7 +4,6 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Noor Alam Dashboard</title>
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     
     <style>
         body {
@@ -83,10 +82,12 @@
 
         .icon-box {
             background: rgba(168, 85, 247, 0.15);
-            color: #c084fc;
-            padding: 8px 12px;
+            padding: 6px 10px;
             border-radius: 12px;
-            font-weight: bold;
+            font-size: 16px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
         }
 
         .live-info-line1 {
@@ -146,6 +147,7 @@
             display: flex;
             align-items: center;
             justify-content: center;
+            font-weight: bold;
         }
 
         .middle-divider-row {
@@ -171,6 +173,7 @@
             z-index: 5;
             box-shadow: 0 0 10px rgba(168, 85, 247, 0.5);
             font-size: 16px;
+            font-weight: bold;
         }
 
         .result-display {
@@ -193,7 +196,7 @@
             border: none;
             color: #64748b;
             cursor: pointer;
-            font-size: 18px;
+            font-size: 16px;
         }
 
         .notepad-textarea {
@@ -288,7 +291,7 @@
 
     <div class="card">
         <div class="card-header">
-            <div class="icon-box"><i class="fa-solid fa-calendar-days"></i></div>
+            <div class="icon-box">📅</div>
             <span>Today's Calendar</span>
         </div>
         <div class="live-info-line1" id="live-date-info">Loading...</div>
@@ -297,41 +300,39 @@
 
     <div class="card">
         <div class="card-header">
-            <div class="icon-box"><i class="fa-solid fa-calculator"></i></div>
+            <div class="icon-box">🔢</div>
             <span id="card-mode-title">Find Date (e.g., +5 or -4)</span>
         </div>
 
         <div class="input-wrapper">
             <input type="text" id="day-input" class="num-input" placeholder="Type number with + or - ...">
             <div class="action-buttons">
-                <button class="btn-mini" onclick="clearInput()"><i class="fa-solid fa-trash"></i></button>
+                <button class="btn-mini" onclick="clearInput()">🗑</button>
             </div>
         </div>
 
         <div class="middle-divider-row">
-            <button class="btn-exchange-mid" onclick="toggleMode()" title="Switch Mode">
-                <i class="fa-solid fa-arrows-up-down"></i>
-            </button>
+            <button class="btn-exchange-mid" onclick="toggleMode()" title="Switch Mode">⇅</button>
         </div>
 
         <div class="result-display">
             <span id="result-text">--</span>
-            <button class="copy-btn" onclick="copyResult()"><i class="fa-regular fa-copy"></i></button>
+            <button class="copy-btn" onclick="copyResult()">📋</button>
         </div>
     </div>
 
     <div class="card">
         <div class="card-header">
-            <div class="icon-box"><i class="fa-solid fa-note-sticky"></i></div>
+            <div class="icon-box">📝</div>
             <span>Hisab-Kitab Notepad</span>
         </div>
         <textarea id="notepad" class="notepad-textarea" placeholder="Write your calculations, notes, or days log here..."></textarea>
-        <button class="btn-wide" onclick="copyNotepad()"><i class="fa-solid fa-copy"></i> Copy All Text</button>
+        <button class="btn-wide" onclick="copyNotepad()">📋 Copy All Text</button>
     </div>
 
     <div class="card">
         <div class="card-header">
-            <div class="icon-box"><i class="fa-solid fa-calculator"></i></div>
+            <div class="icon-box">🧮</div>
             <span>Basic Calculator</span>
         </div>
         <input type="text" id="calc-display" class="calc-screen" readonly placeholder="0">
